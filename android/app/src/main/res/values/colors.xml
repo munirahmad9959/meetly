@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Meetly brand colors -->
+    <color name="meetly_blue">#2196F3</color>
+    <color name="meetly_light_blue">#E3F2FD</color>
+    <color name="meetly_white">#FFFFFF</color>
+</resources>
