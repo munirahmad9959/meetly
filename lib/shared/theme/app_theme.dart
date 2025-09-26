@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Primary Colors
-  static const Color primaryBlue = Color(0xFF2563EB);
-  static const Color primaryBlueDark = Color(0xFF1D4ED8);
-  static const Color primaryBlueLight = Color(0xFF3B82F6);
+  // Brand Palette (requested 4 colors)
+  // 1. #070707 (near-black)
+  // 2. #3FCD36 (green)
+  // 3. #D95639 (danger)
+  // 4. #F8F8F8 (light background)
+  static const Color brandBlack = Color(0xFF070707);
+  static const Color brandGreen = Color(0xFF3FCD36);
+  static const Color brandDanger = Color(0xFFD95639);
+  static const Color brandBg = Color(0xFFF8F8F8);
+
+  // Backward-compat aliases used across the app
+  static const Color primaryBlue = brandGreen;      // primary accent
+  static const Color primaryBlueDark = brandBlack;  // darker accent for gradients
+  static const Color primaryBlueLight = brandGreen; // unify to brand green
   
-  // Success/Error Colors
-  static const Color successGreen = Color(0xFF10B981);
-  static const Color errorRed = Color(0xFFEF4444);
-  static const Color warningOrange = Color(0xFFF59E0B);
+  // Success/Error Colors -> map to brand palette
+  static const Color successGreen = brandGreen;
+  static const Color errorRed = brandDanger;
+  static const Color warningOrange = brandDanger; // constrain to requested palette
   
-  // Neutral Colors
-  static const Color neutralGray = Color(0xFF6B7280);
-  static const Color lightGray = Color(0xFFF3F4F6);
-  static const Color darkGray = Color(0xFF374151);
+  // Neutral Colors -> use only brandBlack and brandBg
+  static const Color neutralGray = brandBlack;
+  static const Color lightGray = brandBg;
+  static const Color darkGray = brandBlack;
   
-  // Background Colors
-  static const Color backgroundColor = Color(0xFFFAFAFA);
-  static const Color surfaceColor = Colors.white;
+  // Background/Surface Colors -> use brandBg
+  static const Color backgroundColor = brandBg;
+  static const Color surfaceColor = brandBg;
   
   static ThemeData get lightTheme {
     return ThemeData(
@@ -33,11 +43,9 @@ class AppTheme {
         primaryContainer: primaryBlueLight,
         secondary: primaryBlueDark,
         surface: surfaceColor,
-        background: backgroundColor,
         error: errorRed,
-        onPrimary: Colors.white,
+        onPrimary: brandBg,
         onSurface: darkGray,
-        onBackground: darkGray,
       ),
       
       // AppBar Theme
@@ -113,7 +121,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
+          foregroundColor: brandBg,
           elevation: 4,
           shadowColor: primaryBlue.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
@@ -140,7 +148,7 @@ class AppTheme {
       ),
       
       // Scaffold Theme
-      scaffoldBackgroundColor: backgroundColor,
+  scaffoldBackgroundColor: backgroundColor,
       
       // Text Theme
       textTheme: const TextTheme(
@@ -183,7 +191,7 @@ class AppTheme {
         labelLarge: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: brandBg,
         ),
       ),
       
@@ -213,7 +221,7 @@ class AppTheme {
     end: Alignment.bottomRight,
     colors: [
       successGreen,
-      Color(0xFF059669),
+      successGreen,
     ],
   );
   
@@ -222,7 +230,7 @@ class AppTheme {
     end: Alignment.bottomRight,
     colors: [
       errorRed,
-      Color(0xFFDC2626),
+      errorRed,
     ],
   );
   

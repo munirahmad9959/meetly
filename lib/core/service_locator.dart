@@ -1,4 +1,5 @@
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../features/auth/data/datasources/firestore_data_source.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/domain/usecases/sign_in_usecase.dart';
@@ -17,6 +18,7 @@ class ServiceLocator {
 
   // Data Sources
   late final AuthRemoteDataSource _authRemoteDataSource;
+  late final FirestoreDataSource _firestoreDataSource;
   
   // Repositories
   late final AuthRepository _authRepository;
@@ -34,7 +36,10 @@ class ServiceLocator {
 
   void init() {
     // Initialize data sources
-    _authRemoteDataSource = AuthRemoteDataSourceImpl();
+    _firestoreDataSource = FirestoreDataSourceImpl();
+    _authRemoteDataSource = AuthRemoteDataSourceImpl(
+      firestoreDataSource: _firestoreDataSource,
+    );
     
     // Initialize repositories
     _authRepository = AuthRepositoryImpl(
@@ -62,6 +67,7 @@ class ServiceLocator {
 
   // Getters for dependencies
   AuthRemoteDataSource get authRemoteDataSource => _authRemoteDataSource;
+  FirestoreDataSource get firestoreDataSource => _firestoreDataSource;
   AuthRepository get authRepository => _authRepository;
   SignInUseCase get signInUseCase => _signInUseCase;
   SignUpUseCase get signUpUseCase => _signUpUseCase;

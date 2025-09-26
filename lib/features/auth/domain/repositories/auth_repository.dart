@@ -17,6 +17,7 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required String fullName,
+    UserRole role = UserRole.softwareEngineer,
   });
   
   Future<void> signOut();
@@ -27,4 +28,7 @@ abstract class AuthRepository {
     String? displayName,
     String? photoUrl,
   });
+  
+  Future<void> updateUserRole(String userId, UserRole role);
+  Future<UserEntity?> getUserFromFirestore(String userId);
 }

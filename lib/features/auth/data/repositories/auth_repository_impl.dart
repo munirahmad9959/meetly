@@ -33,11 +33,13 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String fullName,
+    UserRole role = UserRole.softwareEngineer,
   }) async {
     final userModel = await _remoteDataSource.registerWithEmailAndPassword(
       email: email,
       password: password,
       fullName: fullName,
+      role: role,
     );
     return userModel.toEntity();
   }
@@ -61,5 +63,16 @@ class AuthRepositoryImpl implements AuthRepository {
       displayName: displayName,
       photoUrl: photoUrl,
     );
+  }
+
+  @override
+  Future<void> updateUserRole(String userId, UserRole role) async {
+    await _remoteDataSource.updateUserRole(userId, role);
+  }
+
+  @override
+  Future<UserEntity?> getUserFromFirestore(String userId) async {
+    final userModel = await _remoteDataSource.getUserFromFirestore(userId);
+    return userModel?.toEntity();
   }
 }

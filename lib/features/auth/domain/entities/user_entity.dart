@@ -1,18 +1,22 @@
+enum UserRole { admin, softwareEngineer, hr, salesEngineer, manager }
+
 class UserEntity {
   final String id;
   final String email;
-  final String? displayName;
+  final String? fullName;
   final String? photoUrl;
   final bool emailVerified;
   final DateTime? createdAt;
+  final UserRole role;
 
   const UserEntity({
     required this.id,
     required this.email,
-    this.displayName,
+    this.fullName,
     this.photoUrl,
     required this.emailVerified,
     this.createdAt,
+    required this.role,
   });
 
   @override
@@ -26,6 +30,6 @@ class UserEntity {
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, email: $email, displayName: $displayName)';
+    return 'UserEntity(id: $id, email: $email, fullName: $fullName, role: $role)';
   }
 }

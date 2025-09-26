@@ -4,6 +4,11 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../../shared/utils/notification_helper.dart';
 import '../../../../shared/utils/loading_overlay.dart';
+import '../../../auth/presentation/widgets/role_badge.dart';
+import '../../../auth/presentation/widgets/role_welcome_message.dart';
+import '../../../auth/presentation/widgets/admin_user_management.dart';
+import '../../../settings/presentation/pages/settings_page.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -88,6 +93,18 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+          ),
           Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return IconButton(
@@ -143,7 +160,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,26 +178,39 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 10),
             Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
-                return Text(
-                  'Hello ${authProvider.user?.displayName ?? authProvider.user?.email ?? 'User'}!',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
+                return Column(
+                  children: [
+                    Text(
+                      'Hello ${authProvider.user?.fullName ?? authProvider.user?.email ?? 'User'}!',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (authProvider.user?.role != null) ...[
+                      const SizedBox(height: 8),
+                      RoleBadge(role: authProvider.user!.role),
+                    ],
+                  ],
                 );
               },
             ),
-            const SizedBox(height: 30),
-            const Text(
-              'Your authentication is working perfectly!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.green,
-              ),
-              textAlign: TextAlign.center,
+            
+            const SizedBox(height: 20),
+            
+            // Admin User Management (only for admins)
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                final user = authProvider.user;
+                if (user == null || user.role != UserRole.admin) {
+                  return const SizedBox.shrink();
+                }
+                
+                return const AdminUserManagement();
+              },
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

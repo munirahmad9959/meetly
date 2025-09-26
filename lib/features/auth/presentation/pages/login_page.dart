@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'register_page.dart';
+// import 'register_page.dart'; // Commented out - only admin can create users
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
@@ -220,33 +220,33 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Register Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterPage(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "Register here",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Register Link - Commented out as only admin can create users
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     const Text(
+                    //       "Don't have an account? ",
+                    //       style: TextStyle(color: Colors.grey),
+                    //     ),
+                    //     GestureDetector(
+                    //       onTap: () {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //             builder: (context) => const RegisterPage(),
+                    //           ),
+                    //         );
+                    //       },
+                    //       child: const Text(
+                    //         "Register here",
+                    //         style: TextStyle(
+                    //           color: Colors.blue,
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     const Spacer(), // Push content up if extra space
                   ],
                 ),
