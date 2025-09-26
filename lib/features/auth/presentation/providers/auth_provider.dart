@@ -70,8 +70,9 @@ class AuthProvider with ChangeNotifier {
   Future<void> registerWithEmailAndPassword(
     String email,
     String password,
-    String fullName,
-  ) async {
+    String fullName, {
+    UserRole role = UserRole.softwareEngineer,
+  }) async {
     try {
       _setLoading(true);
       _clearError();
@@ -80,6 +81,7 @@ class AuthProvider with ChangeNotifier {
         email: email,
         password: password,
         fullName: fullName,
+        role: role,
       );
       
       _user = user;

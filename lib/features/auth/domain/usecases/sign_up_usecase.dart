@@ -10,6 +10,7 @@ class SignUpUseCase {
     required String email,
     required String password,
     required String fullName,
+    UserRole role = UserRole.softwareEngineer,
   }) async {
     if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
       throw Exception('All fields are required');
@@ -31,6 +32,7 @@ class SignUpUseCase {
       email: email,
       password: password,
       fullName: fullName,
+      role: role,
     );
   }
 

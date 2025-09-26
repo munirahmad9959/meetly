@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/role_selector.dart';
 import '../../../../shared/utils/notification_helper.dart';
 import '../../../../shared/utils/loading_overlay.dart';
+import '../../domain/entities/user_entity.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  UserRole _selectedRole = UserRole.softwareEngineer;
 
   @override
   void dispose() {
@@ -150,6 +153,25 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 16),
+                
+                // Role Selection
+                RoleSelector(
+                  selectedRole: _selectedRole,
+                  onChanged: (UserRole? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedRole = newValue;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a role';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 24),
                 
                 // Register Button
@@ -170,6 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               _emailController.text.trim(),
                               _passwordController.text,
                               _fullNameController.text.trim(),
+                              role: _selectedRole,
                             );
                             
                             // Hide loading overlay

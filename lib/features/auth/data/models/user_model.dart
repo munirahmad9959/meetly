@@ -5,20 +5,22 @@ class UserModel extends UserEntity {
   const UserModel({
     required super.id,
     required super.email,
-    super.displayName,
+    super.fullName,
     super.photoUrl,
     required super.emailVerified,
+    required super.role,
     super.createdAt,
   });
 
   // Convert from Firebase User to UserModel
-  factory UserModel.fromFirebaseUser(User user) {
+  factory UserModel.fromFirebaseUser(User user, {UserRole role = UserRole.softwareEngineer}) {
     return UserModel(
       id: user.uid,
       email: user.email ?? '',
-      displayName: user.displayName,
+      fullName: user.displayName,
       photoUrl: user.photoURL,
       emailVerified: user.emailVerified,
+      role: role,
       createdAt: user.metadata.creationTime,
     );
   }
@@ -28,9 +30,10 @@ class UserModel extends UserEntity {
     return {
       'id': id,
       'email': email,
-      'displayName': displayName,
+      'fullName': fullName,
       'photoUrl': photoUrl,
       'emailVerified': emailVerified,
+      'role': role.name,
       'createdAt': createdAt?.millisecondsSinceEpoch,
     };
   }
@@ -40,12 +43,13 @@ class UserModel extends UserEntity {
     return UserModel(
       id: map['id'] ?? '',
       email: map['email'] ?? '',
-      displayName: map['displayName'],
+      fullName: map['fullName'] ?? map['displayName'], // Support both for migration
       photoUrl: map['photoUrl'],
       emailVerified: map['emailVerified'] ?? false,
-      createdAt: map['createdAt'] != null 
+      createdAt: map['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['createdAt'])
           : null,
+      role: _roleFromString(map['role'] ?? 'softwareEngineer'),
     );
   }
 
@@ -54,10 +58,18 @@ class UserModel extends UserEntity {
     return UserEntity(
       id: id,
       email: email,
-      displayName: displayName,
+      fullName: fullName,
       photoUrl: photoUrl,
       emailVerified: emailVerified,
+      role: role,
       createdAt: createdAt,
+    );
+  }
+
+  static UserRole _roleFromString(String role) {
+    return UserRole.values.firstWhere(
+      (e) => e.name == role,
+      orElse: () => UserRole.softwareEngineer,
     );
   }
 }

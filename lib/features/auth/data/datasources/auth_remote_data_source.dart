@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
+import '../../domain/entities/user_entity.dart';
+import 'firestore_data_source.dart';
 
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges;
@@ -14,6 +16,7 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
     required String fullName,
+    UserRole role = UserRole.softwareEngineer,
   });
   
   Future<void> signOut();
@@ -22,23 +25,54 @@ abstract class AuthRemoteDataSource {
     String? displayName,
     String? photoUrl,
   });
+  
+  Future<void> updateUserRole(String userId, UserRole role);
+  Future<UserModel?> getUserFromFirestore(String userId);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
+  final FirestoreDataSource _firestoreDataSource;
 
-  AuthRemoteDataSourceImpl({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthRemoteDataSourceImpl({
+    FirebaseAuth? firebaseAuth,
+    FirestoreDataSource? firestoreDataSource,
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestoreDataSource = firestoreDataSource ?? FirestoreDataSourceImpl();
 
   @override
-  Stream<UserModel?> get authStateChanges =>
-      _firebaseAuth.authStateChanges().map((user) => 
-          user != null ? UserModel.fromFirebaseUser(user) : null);
+  Stream<UserModel?> get authStateChanges {
+    return _firebaseAuth.authStateChanges().asyncMap((user) async {
+      if (user == null) return null;
+      
+      // Try to get user data from Firestore first
+      final firestoreUser = await _firestoreDataSource.getUser(user.uid);
+      if (firestoreUser != null) {
+        return firestoreUser;
+      }
+      
+      // If no Firestore data, create from Firebase Auth user with default role
+      return UserModel.fromFirebaseUser(user, role: UserRole.softwareEngineer);
+    });
+  }
 
   @override
   UserModel? get currentUser {
     final user = _firebaseAuth.currentUser;
-    return user != null ? UserModel.fromFirebaseUser(user) : null;
+    if (user == null) return null;
+    
+    // Note: This is synchronous, so we return with default role
+    // For complete user data with role, use getUserFromFirestore method
+    return UserModel.fromFirebaseUser(user, role: UserRole.softwareEngineer);
+  }
+  
+  // Additional method to get user data from Firestore
+  Future<UserModel?> getUserFromFirestore(String userId) async {
+    try {
+      return await _firestoreDataSource.getUser(userId);
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
@@ -56,7 +90,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Failed to sign in user');
       }
       
-      return UserModel.fromFirebaseUser(result.user!);
+      // Try to get user data from Firestore
+      final firestoreUser = await _firestoreDataSource.getUser(result.user!.uid);
+      if (firestoreUser != null) {
+        return firestoreUser;
+      }
+      
+      // If no Firestore data, create from Firebase Auth user with default role
+      return UserModel.fromFirebaseUser(result.user!, role: UserRole.softwareEngineer);
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -69,6 +110,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
     required String fullName,
+    UserRole role = UserRole.softwareEngineer,
   }) async {
     try {
       final UserCredential result = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -83,7 +125,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Update user display name
       await result.user!.updateDisplayName(fullName);
       
-      return UserModel.fromFirebaseUser(result.user!);
+      // Create user model with role
+      final userModel = UserModel.fromFirebaseUser(
+        result.user!,
+        role: role,
+      );
+      
+      // Save user data to Firestore
+      await _firestoreDataSource.saveUser(userModel);
+      
+      return userModel;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -131,6 +182,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } catch (e) {
       throw Exception('Error updating profile: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> updateUserRole(String userId, UserRole role) async {
+    try {
+      await _firestoreDataSource.updateUser(userId, {'role': role.name});
+    } catch (e) {
+      throw Exception('Error updating user role: ${e.toString()}');
     }
   }
 
