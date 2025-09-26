@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:meetly/firebase_options.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
@@ -9,11 +10,10 @@ import 'shared/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
   // Initialize dependency injection
   ServiceLocator.instance.init();
-  
   runApp(const MyApp());
 }
 
