@@ -73,6 +73,8 @@ flutter:
     - assets/icons/email.png
     - assets/icons/View.png
     - assets/icons/View_hide.png
+    - assets/avatar.png
+    - assets/avatar-removebg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/features/home/presentation/pages/admin_home_page.dart';
+import 'package:meetly/features/home/presentation/pages/user_home_page.dart';
 import 'dart:async';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../home/presentation/pages/home_page.dart';
@@ -21,27 +23,19 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
+    );
 
     // Start animation
     _animationController.forward();
@@ -52,7 +46,11 @@ class _SplashPageState extends State<SplashPage>
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (authProvider.isAuthenticated) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            MaterialPageRoute(
+              builder: (context) => authProvider.user?.role == "admin"
+                  ? const AdminHomePage()
+                  : const UserHomePage(),
+            ),
           );
         } else {
           Navigator.of(context).pushReplacement(
@@ -80,11 +78,7 @@ class _SplashPageState extends State<SplashPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.blue.shade50,
-              Colors.white,
-              Colors.blue.shade50,
-            ],
+            colors: [Colors.blue.shade50, Colors.white, Colors.blue.shade50],
           ),
         ),
         child: Column(
@@ -124,7 +118,7 @@ class _SplashPageState extends State<SplashPage>
               },
             ),
             const SizedBox(height: 30),
-            
+
             // App Title
             AnimatedBuilder(
               animation: _fadeAnimation,
@@ -144,7 +138,7 @@ class _SplashPageState extends State<SplashPage>
               },
             ),
             const SizedBox(height: 10),
-            
+
             // Subtitle
             AnimatedBuilder(
               animation: _fadeAnimation,
@@ -163,7 +157,7 @@ class _SplashPageState extends State<SplashPage>
               },
             ),
             const SizedBox(height: 50),
-            
+
             // Loading indicator
             AnimatedBuilder(
               animation: _fadeAnimation,

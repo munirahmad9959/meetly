@@ -10,6 +10,8 @@ class AppTheme {
   static const Color brandGreen = Color(0xFF3FCD36);
   static const Color brandDanger = Color(0xFFD95639);
   static const Color brandBg = Color(0xFFF8F8F8);
+  static const Color brandSkin = Color(0xFFFCD36A);
+  static const Color brandBullet = Color(0xFFEFEFEF);
 
   // Backward-compat aliases used across the app
   static const Color primaryBlue = brandGreen;      // primary accent
