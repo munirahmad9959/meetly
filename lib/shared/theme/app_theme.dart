@@ -6,7 +6,7 @@ class AppTheme {
   // 2. #3FCD36 (green)
   // 3. #D95639 (danger)
   // 4. #F8F8F8 (light background)
-  static const Color brandBlack = Color(0xFF070707);
+  static const Color brandBlack = Color(0xFF28282b);
   static const Color brandGreen = Color(0xFF3FCD36);
   static const Color brandDanger = Color(0xFFD95639);
   static const Color brandBg = Color(0xFFF8F8F8);

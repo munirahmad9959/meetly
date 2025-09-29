@@ -129,7 +129,7 @@ class _SplashPageState extends State<SplashPage>
                     'Meetly',
                     style: TextStyle(
                       fontSize: 48,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: Colors.blue,
                       letterSpacing: 2,
                     ),

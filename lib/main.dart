@@ -28,9 +28,7 @@ class MyApp extends StatelessWidget {
         title: 'Meetly',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme.copyWith(
-          textTheme: GoogleFonts.fredokaTextTheme(
-            AppTheme.lightTheme.textTheme,
-          ),
+          textTheme: GoogleFonts.poppinsTextTheme(),
         ),
         home: const SplashPage(),
       ),
