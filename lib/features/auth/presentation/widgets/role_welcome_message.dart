@@ -47,7 +47,7 @@ class RoleWelcomeMessage extends StatelessWidget {
                   _getWelcomeTitle(role, userName),
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: _getRoleColor(role),
                   ),
                 ),

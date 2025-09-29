@@ -74,10 +74,9 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 38,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const Icon(Icons.keyboard_arrow_down, color: Colors.white),
                   ],
                 ),
               ),
@@ -138,7 +137,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
             day,
             style: TextStyle(
               color: isSelected ? AppTheme.brandBlack : AppTheme.brandBg,
-              fontSize: 10,
+              fontSize: 8,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -146,8 +145,8 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
             date,
             style: TextStyle(
               color: isSelected ? AppTheme.brandBlack : AppTheme.brandBg,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

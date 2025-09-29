@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'Create Account',
                   style: TextStyle(
                     fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: Colors.blue,
                   ),
                   textAlign: TextAlign.center,
