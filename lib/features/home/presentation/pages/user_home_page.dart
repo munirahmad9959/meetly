@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/features/home/presentation/pages/calender_page.dart';
 import 'package:meetly/features/home/presentation/widgets/calendar_app_bar.dart';
+import 'package:meetly/features/home/presentation/widgets/highlight_card.dart';
+import 'package:meetly/features/home/presentation/widgets/schedule_card.dart';
 import 'package:meetly/features/settings/presentation/pages/settings_page.dart';
 import 'package:meetly/shared/theme/app_theme.dart';
 
@@ -71,253 +74,60 @@ class _UserHomePageState extends State<UserHomePage> {
     final bool isTabletWidth = size.width >= 600;
     final bool isWideLayout = size.width >= 720;
 
-    final double horizontalPadding = _clamp(size.width * 0.06, 12, 28);
-    final double verticalPadding = _clamp(size.height * 0.02, 12, 28);
+    final double horizontalPadding = _clamp(size.width * 0.025, 10, 24);
+    final double verticalPadding = _clamp(size.height * 0.01, 10, 24);
     final double verticalSpacing = _clamp(size.height * 0.025, 14, 32);
-    final double verticalSpacingSmall = _clamp(size.height * 0.015, 8, 20);
     final double navHorizontalMargin = _clamp(size.width * 0.05, 16, 28);
     final double navBottomMargin = _clamp(size.height * 0.03, 16, 30);
     final double navItemPaddingValue = _clamp(size.width * 0.03, 10, 16);
     final double navItemRadius = _clamp(size.width * 0.08, 18, 26);
     final double navIconSize = isTabletWidth ? 30 : (isCompactWidth ? 22 : 26);
 
-    final double cardPadding = _clamp(size.width * 0.05, 20, 32);
-    final double actionButtonSize = _clamp(size.width * 0.18, 44, 60);
-    final double actionIconSize = isTabletWidth ? 26 : 24;
-    final double avatarSize = _clamp(size.width * 0.15, 36, 56);
-    final double scheduleRowSpacing = verticalSpacingSmall;
+    final Widget homeView = LayoutBuilder(
+      key: const ValueKey('home-layout'),
+      builder: (context, constraints) {
+        final EdgeInsets scrollPadding = EdgeInsets.fromLTRB(
+          horizontalPadding,
+          verticalPadding,
+          horizontalPadding,
+          verticalPadding + mediaQuery.padding.bottom + navBottomMargin,
+        );
 
-    final double highlightTitleFont = isTabletWidth ? 26 : (isCompactWidth ? 16 : 20);
-    final double highlightSubtitleFont = isTabletWidth ? 16 : (isCompactWidth ? 12 : 13);
-    final double sessionTitleFont = isTabletWidth ? 36 : (isCompactWidth ? 24 : 30);
-    final double sessionSubtitleFont = isTabletWidth ? 20 : (isCompactWidth ? 14 : 16.5);
-    final double tagFontSize = isTabletWidth ? 20 : (isCompactWidth ? 15 : 18);
-    final EdgeInsets tagPadding = EdgeInsets.symmetric(
-      horizontal: _clamp(size.width * 0.03, 8, 14),
-      vertical: _clamp(size.height * 0.005, 4, 8),
+        if (isWideLayout) {
+          return SingleChildScrollView(
+            key: const ValueKey('home-wide'),
+            padding: scrollPadding,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: ScheduleCard()),
+                SizedBox(width: horizontalPadding),
+                Expanded(child: HighlightCard()),
+              ],
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          key: const ValueKey('home-compact'),
+          padding: scrollPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ScheduleCard(),
+              SizedBox(height: verticalSpacing),
+              HighlightCard(),
+            ],
+          ),
+        );
+      },
     );
 
-    Widget highlightCard() {
-      return Container(
-        padding: EdgeInsets.all(cardPadding),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(34)),
-          color: AppTheme.brandSkin,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Team Meeting',
-                    style: TextStyle(
-                      color: AppTheme.brandBlack,
-                      fontSize: highlightTitleFont,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: verticalSpacingSmall),
-                  Text(
-                    'Discussing the project with the team',
-                    style: TextStyle(
-                      color: AppTheme.brandBlack,
-                      fontSize: highlightSubtitleFont,
-                      fontWeight: FontWeight.normal,
-                      height: 1.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: verticalSpacingSmall),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-              },
-              child: Container(
-                width: actionButtonSize,
-                height: actionButtonSize,
-                decoration: const BoxDecoration(
-                  color: AppTheme.brandBlack,
-                  borderRadius: BorderRadius.all(Radius.circular(34)),
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: actionIconSize,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    Widget scheduleCard() {
-      return Container(
-        padding: EdgeInsets.all(cardPadding),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(34)),
-          color: AppTheme.brandBg,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    '12:00 - 13:00 PM',
-                    style: TextStyle(
-                      color: AppTheme.brandBlack,
-                      fontSize: highlightSubtitleFont,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: avatarSize + (avatarSize * 0.6),
-                  height: avatarSize,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: 0,
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/avatar-removebg.png',
-                            width: avatarSize,
-                            height: avatarSize,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: avatarSize * 0.45,
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/avatar-removebg.png',
-                            width: avatarSize,
-                            height: avatarSize,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: verticalSpacing),
-            Text(
-              'One-to-one',
-              style: TextStyle(
-                color: AppTheme.brandBlack,
-                fontSize: sessionTitleFont,
-                fontWeight: FontWeight.bold,
-                height: 1.1,
-              ),
-            ),
-            SizedBox(height: verticalSpacingSmall),
-            Text(
-              'Repeats every two weeks',
-              style: TextStyle(
-                color: AppTheme.brandBlack,
-                fontSize: sessionSubtitleFont,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
-              ),
-            ),
-            SizedBox(height: verticalSpacing),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Wrap(
-                    spacing: scheduleRowSpacing,
-                    runSpacing: scheduleRowSpacing / 2,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.brandBullet,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: tagPadding,
-                        child: Text(
-                          'Today',
-                          style: TextStyle(
-                            color: AppTheme.brandBlack,
-                            fontSize: tagFontSize,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.brandBullet,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: tagPadding,
-                        child: Text(
-                          '1h',
-                          style: TextStyle(
-                            color: AppTheme.brandBlack,
-                            fontSize: tagFontSize - 2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: scheduleRowSpacing),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsPage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: actionButtonSize,
-                    height: actionButtonSize,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.brandBlack,
-                      borderRadius: BorderRadius.all(Radius.circular(34)),
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.arrow_outward_rounded,
-                      color: Colors.white,
-                      size: actionIconSize,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: CalendarAppBar(height: isTabletWidth ? 260 : 220),
+      backgroundColor: AppTheme.brandBlack,
+      appBar: _selectedIndex == 0
+          ? CalendarAppBar(height: isTabletWidth ? 260 : 220)
+          : null,
       bottomNavigationBar: Padding(
         padding: EdgeInsets.fromLTRB(
           navHorizontalMargin,
@@ -355,41 +165,20 @@ class _UserHomePageState extends State<UserHomePage> {
         ),
       ),
 
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final EdgeInsets scrollPadding = EdgeInsets.fromLTRB(
-            horizontalPadding,
-            verticalPadding,
-            horizontalPadding,
-            verticalPadding + mediaQuery.padding.bottom + navBottomMargin,
-          );
-
-          if (isWideLayout) {
-            return SingleChildScrollView(
-              padding: scrollPadding,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: highlightCard()),
-                  SizedBox(width: horizontalPadding),
-                  Expanded(child: scheduleCard()),
-                ],
-              ),
-            );
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        child: () {
+          switch (_selectedIndex) {
+            case 1:
+              return CalendarPage();
+            case 2:
+              return const SettingsPage();
+            default:
+              return homeView;
           }
-
-          return SingleChildScrollView(
-            padding: scrollPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                highlightCard(),
-                SizedBox(height: verticalSpacing),
-                scheduleCard(),
-              ],
-            ),
-          );
-        },
+        }(),
       ),
     );
   }
