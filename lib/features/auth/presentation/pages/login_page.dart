@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/features/auth/domain/entities/user_entity.dart';
+import 'package:meetly/features/home/presentation/pages/admin_home_page.dart';
+import 'package:meetly/features/home/presentation/pages/user_home_page.dart';
 // import 'register_page.dart'; // Commented out - only admin can create users
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
-import '../../../home/presentation/pages/home_page.dart';
+// import '../../../home/presentation/pages/home_page.dart';
 import '../../../../shared/utils/notification_helper.dart';
 import '../../../../shared/utils/loading_overlay.dart';
 
@@ -53,9 +56,11 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(24.0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height - 
-                         MediaQuery.of(context).padding.top - 
-                         MediaQuery.of(context).padding.bottom - 100,
+              minHeight:
+                  MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom -
+                  100,
             ),
             child: IntrinsicHeight(
               child: Form(
@@ -129,8 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Image.asset(
-                            _isPasswordVisible 
-                                ? 'assets/icons/View.png' 
+                            _isPasswordVisible
+                                ? 'assets/icons/View.png'
                                 : 'assets/icons/View_hide.png',
                             width: 20,
                             height: 20,
@@ -160,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Login Button
                     Consumer<AuthProvider>(
                       builder: (context, authProvider, child) {
@@ -168,43 +173,70 @@ class _LoginPageState extends State<LoginPage> {
                           text: 'Login',
                           isLoading: authProvider.isLoading,
                           icon: Icons.login_rounded,
-                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
                                 // Show loading overlay
-                                LoadingOverlay.show(context, message: 'Signing you in...');
-                                
+                                LoadingOverlay.show(
+                                  context,
+                                  message: 'Signing you in...',
+                                );
+
                                 await authProvider.signInWithEmailAndPassword(
                                   _emailController.text.trim(),
                                   _passwordController.text,
                                 );
-                                
+
                                 // Hide loading overlay
                                 LoadingOverlay.hide();
-                                
+
                                 if (context.mounted) {
                                   // Show success notification
                                   NotificationHelper.showSuccess(
                                     context,
                                     'Welcome back! Login successful 🎉',
                                   );
-                                  
+
                                   // Navigate to home after a brief delay
-                                  await Future.delayed(const Duration(milliseconds: 500));
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                  );
                                   if (context.mounted) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const HomePage(),
-                                      ),
-                                    );
+                                    final authProvider =
+                                        Provider.of<AuthProvider>(
+                                          context,
+                                          listen: false,
+                                        );
+
+                                    if (authProvider.isAuthenticated) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              authProvider.user?.role ==
+                                                  UserRole.admin
+                                              ? const AdminHomePage()
+                                              : const UserHomePage(),
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage(),
+                                        ),
+                                      );
+                                    }
                                   }
                                 }
                               } catch (e) {
                                 // Hide loading overlay
                                 LoadingOverlay.hide();
-                                
+
                                 if (context.mounted) {
                                   // Show error notification
                                   NotificationHelper.showError(

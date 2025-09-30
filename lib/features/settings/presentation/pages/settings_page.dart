@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/features/auth/presentation/pages/login_page.dart';
 import 'package:meetly/shared/theme/app_theme.dart';
+import 'package:meetly/shared/utils/loading_overlay.dart';
 import 'package:provider/provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/widgets/role_badge.dart';
@@ -14,6 +16,7 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppTheme.brandBlack,
         elevation: 0,
+        centerTitle: true,
         title: const Text(
           'Settings',
           style: TextStyle(
@@ -21,8 +24,36 @@ class SettingsPage extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppTheme.brandBg),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_outlined, color: AppTheme.brandBg),
+            onPressed: () async {
+              final authProvider = Provider.of<AuthProvider>(
+                context,
+                listen: false,
+              );
+              try {
+                LoadingOverlay.show(context, message: 'Signing out...');
+                await authProvider.signOut();
+                LoadingOverlay.hide();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+              } catch (e) {
+                LoadingOverlay.hide();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error signing out: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
@@ -33,7 +64,7 @@ class SettingsPage extends StatelessWidget {
               builder: (context, authProvider, child) {
                 final user = authProvider.user;
                 if (user == null) return const SizedBox.shrink();
-                
+
                 return Container(
                   decoration: BoxDecoration(
                     color: AppTheme.brandBg,
@@ -75,7 +106,9 @@ class SettingsPage extends StatelessWidget {
                                   user.email,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: AppTheme.brandBlack.withValues(alpha: 0.7),
+                                    color: AppTheme.brandBlack.withValues(
+                                      alpha: 0.7,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -99,7 +132,9 @@ class SettingsPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              user.emailVerified ? Icons.verified : Icons.warning_amber_rounded,
+                              user.emailVerified
+                                  ? Icons.verified
+                                  : Icons.warning_amber_rounded,
                               color: user.emailVerified
                                   ? AppTheme.brandGreen
                                   : AppTheme.brandDanger,
@@ -199,10 +234,7 @@ class _SettingsListTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           alignment: Alignment.center,
-          child: Icon(
-            data.icon,
-            color: AppTheme.brandBlack,
-          ),
+          child: Icon(data.icon, color: AppTheme.brandBlack),
         ),
         title: Text(
           data.title,
@@ -214,9 +246,7 @@ class _SettingsListTile extends StatelessWidget {
         ),
         subtitle: Text(
           data.subtitle,
-          style: TextStyle(
-            color: AppTheme.brandBlack.withValues(alpha: 0.6),
-          ),
+          style: TextStyle(color: AppTheme.brandBlack.withValues(alpha: 0.6)),
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/shared/constants/app_constants.dart';
 import 'package:meetly/shared/theme/app_theme.dart';
 
 class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -73,7 +74,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                       currentMonth,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 38,
+                        fontSize: AppTheme.mainHeading,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
