@@ -6,7 +6,6 @@ import 'features/splash/presentation/pages/splash_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'core/service_locator.dart';
-import 'shared/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Meetly',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme.copyWith(
+        theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),
         ),
         home: const SplashPage(),

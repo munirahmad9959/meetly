@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:meetly/features/auth/domain/entities/user_entity.dart';
 import 'package:meetly/features/home/presentation/pages/admin_home_page.dart';
 import 'package:meetly/features/home/presentation/pages/user_home_page.dart';
 import 'dart:async';
 import '../../../auth/presentation/pages/login_page.dart';
-import '../../../home/presentation/pages/home_page.dart';
 import 'package:provider/provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -40,14 +40,14 @@ class _SplashPageState extends State<SplashPage>
     // Start animation
     _animationController.forward();
 
-    // Navigate based on authentication status after 3 seconds
+    // Navigate based on authentication status after 5 seconds
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (authProvider.isAuthenticated) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => authProvider.user?.role == "admin"
+              builder: (context) => authProvider.user?.role == UserRole.admin
                   ? const AdminHomePage()
                   : const UserHomePage(),
             ),
