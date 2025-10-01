@@ -6,6 +6,7 @@ import 'dart:async';
 import '../../../auth/presentation/pages/login_page.dart';
 import 'package:provider/provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
