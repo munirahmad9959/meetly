@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/home/presentation/pages/admin_home_page.dart';
+import '../../features/home/presentation/pages/user_home_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/domain/entities/user_entity.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -22,7 +24,11 @@ class AuthWrapper extends StatelessWidget {
         
         // Navigate based on authentication status
         if (authProvider.isAuthenticated) {
-          return const HomePage();
+          final role = authProvider.user?.role ?? UserRole.softwareEngineer;
+          if (role == UserRole.admin) {
+            return const AdminHomePage();
+          }
+          return const UserHomePage();
         } else {
           return const LoginPage();
         }

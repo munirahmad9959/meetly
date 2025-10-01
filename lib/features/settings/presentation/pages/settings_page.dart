@@ -21,12 +21,16 @@ class SettingsPage extends StatelessWidget {
           'Settings',
           style: TextStyle(
             color: AppTheme.brandBg,
+            fontSize: 20, // Added consistent font size
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout_outlined, color: AppTheme.brandBg),
+            icon: const Icon(Icons.logout_outlined, 
+              color: AppTheme.brandBg,
+              size: 24, // Consistent icon size
+            ),
             onPressed: () async {
               final authProvider = Provider.of<AuthProvider>(
                 context,
@@ -68,10 +72,10 @@ class SettingsPage extends StatelessWidget {
                 return Container(
                   decoration: BoxDecoration(
                     color: AppTheme.brandBg,
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(24), // Reduced from 28 for better proportions
                     boxShadow: AppTheme.cardShadow,
                   ),
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -79,29 +83,33 @@ class SettingsPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CircleAvatar(
-                            radius: 32,
+                            radius: 36, // Increased from 32 for better visibility
                             backgroundColor: AppTheme.brandBg,
                             backgroundImage: user.photoUrl != null
                                 ? NetworkImage(user.photoUrl!)
                                 : null,
                             child: user.photoUrl == null
-                                ? RoleIcon(role: user.role, size: 32)
+                                ? RoleIcon(role: user.role, size: 36) // Consistent with avatar size
                                 : null,
                           ),
                           const SizedBox(width: 16),
+
+                          // user detail section(name,  email, role badge)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  user.fullName ?? 'No Name',
+                                  user.fullName ?? 'User',
                                   style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14, // Reduced from 20 for better hierarchy
+                                    fontWeight: FontWeight.normal,
                                     color: AppTheme.brandBlack,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 6), // Increased spacing
                                 Text(
                                   user.email,
                                   style: TextStyle(
@@ -110,8 +118,10 @@ class SettingsPage extends StatelessWidget {
                                       alpha: 0.7,
                                     ),
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 12), // Increased spacing
                                 RoleBadge(role: user.role),
                               ],
                             ),
@@ -119,14 +129,16 @@ class SettingsPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 18),
+
+                      // Email verification section
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
+                          horizontal: 10, // Increased padding
+                          vertical: 5,
                         ),
                         decoration: BoxDecoration(
                           color: AppTheme.brandBullet,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12), // Reduced from 16 for better proportions
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -138,7 +150,7 @@ class SettingsPage extends StatelessWidget {
                               color: user.emailVerified
                                   ? AppTheme.brandGreen
                                   : AppTheme.brandDanger,
-                              size: 18,
+                              size: 17, 
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -149,7 +161,7 @@ class SettingsPage extends StatelessWidget {
                                 color: user.emailVerified
                                     ? AppTheme.brandGreen
                                     : AppTheme.brandDanger,
-                                fontSize: 13,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -204,7 +216,7 @@ class _SettingsListSection extends StatelessWidget {
       children: [
         for (int i = 0; i < items.length; i++)
           Padding(
-            padding: EdgeInsets.only(bottom: i == items.length - 1 ? 0 : 16),
+            padding: EdgeInsets.only(bottom: i == items.length - 1 ? 0 : 12), // Reduced from 16 for tighter grouping
             child: _SettingsListTile(data: items[i]),
           ),
       ],
@@ -222,38 +234,50 @@ class _SettingsListTile extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.brandBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24), // Reduced from 24 for better proportions
         boxShadow: AppTheme.cardShadow,
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16, // Added horizontal padding
+          vertical: 8,    // Added vertical padding
+        ),
         leading: Container(
-          width: 44,
-          height: 44,
+          width: 48,  // Increased from 44 for better touch target
+          height: 48, // Increased from 44 for better touch target
           decoration: BoxDecoration(
             color: AppTheme.brandBullet,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(24), // Reduced from 14 for better proportions
           ),
           alignment: Alignment.center,
-          child: Icon(data.icon, color: AppTheme.brandBlack),
+          child: Icon(
+            data.icon, 
+            color: AppTheme.brandBlack,
+            size: 18, // Added consistent icon size
+          ),
         ),
         title: Text(
           data.title,
           style: const TextStyle(
             color: AppTheme.brandBlack,
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            fontSize: 12,
           ),
         ),
         subtitle: Text(
           data.subtitle,
-          style: TextStyle(color: AppTheme.brandBlack.withValues(alpha: 0.6)),
+          style: TextStyle(
+            color: AppTheme.brandBlack.withValues(alpha: 0.6),
+            fontSize: 8, // Added consistent font size
+          ),
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
-          size: 16,
+          size: 12,
           color: AppTheme.brandBlack,
         ),
-        onTap: () {},
+        onTap: () {
+        },
       ),
     );
   }

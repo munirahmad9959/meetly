@@ -18,6 +18,7 @@ abstract class AuthRepository {
     required String password,
     required String fullName,
     UserRole role = UserRole.softwareEngineer,
+    bool isAdmin = false,
   });
   
   Future<void> signOut();
