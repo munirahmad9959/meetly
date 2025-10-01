@@ -50,13 +50,16 @@ class _AdminUsersPageState extends State<AdminUsersPage>
     final query = _searchQuery.trim().toLowerCase();
     if (query.isEmpty) return _users;
     return _users.where((user) {
-      final haystack = '${user.name.toLowerCase()} ${user.email.toLowerCase()} ${user.role.toLowerCase()}';
+      final haystack =
+          '${user.name.toLowerCase()} ${user.email.toLowerCase()} ${user.role.toLowerCase()}';
       return haystack.contains(query);
     }).toList();
   }
 
   void _showUserForm({UserDirectory? user, int? index}) {
-    final formKey = GlobalKey<FormState>(debugLabel: 'userForm_${DateTime.now().millisecondsSinceEpoch}');
+    final formKey = GlobalKey<FormState>(
+      debugLabel: 'userForm_${DateTime.now().millisecondsSinceEpoch}',
+    );
     final nameController = TextEditingController(text: user?.name ?? '');
     final emailController = TextEditingController(text: user?.email ?? '');
     String roleValue = user?.role ?? _roles.first;
@@ -88,7 +91,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                       user == null ? 'Invite User' : 'Update User',
                       style: const TextStyle(
                         color: AppTheme.brandBlack,
-                        fontSize: 18,
+                        fontSize: 16, // Reduced from 18
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -132,7 +135,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                       style: TextStyle(
                         color: AppTheme.brandBlack.withOpacity(0.8),
                         fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                        fontSize: 12, // Reduced from 13
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -146,7 +149,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                                 role,
                                 style: const TextStyle(
                                   color: AppTheme.brandBlack,
-                                  fontSize: 13,
+                                  fontSize: 12, // Reduced from 13
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -179,10 +182,10 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                           child: OutlinedButton(
                             onPressed: () => Navigator.of(context).pop(),
                             style: OutlinedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
-                              side:
-                                  const BorderSide(color: AppTheme.brandBlack),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: const BorderSide(
+                                color: AppTheme.brandBlack,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -192,7 +195,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                               style: TextStyle(
                                 color: AppTheme.brandBlack,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 12, // Reduced from 13
                               ),
                             ),
                           ),
@@ -201,14 +204,15 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              if (!(formKey.currentState?.validate() ?? false)) {
+                              if (!(formKey.currentState?.validate() ??
+                                  false)) {
                                 return;
                               }
 
                               final record = UserDirectory(
-                                id: user?.id ??
-                                    DateTime.now()
-                                        .millisecondsSinceEpoch
+                                id:
+                                    user?.id ??
+                                    DateTime.now().millisecondsSinceEpoch
                                         .toString(),
                                 name: nameController.text.trim(),
                                 email: emailController.text.trim(),
@@ -238,7 +242,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                               style: const TextStyle(
                                 color: AppTheme.brandBg,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                                fontSize: 12, // Reduced from 13
                               ),
                             ),
                           ),
@@ -292,7 +296,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
           style: TextStyle(
             color: AppTheme.brandBg,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: 16, // Reduced from 18
           ),
         ),
       ),
@@ -300,12 +304,16 @@ class _AdminUsersPageState extends State<AdminUsersPage>
         heroTag: 'inviteUserFAB',
         onPressed: () => _showUserForm(),
         backgroundColor: AppTheme.brandGreen,
-        icon: const Icon(Icons.person_add_alt_1_rounded, color: AppTheme.brandBlack),
+        icon: const Icon(
+          Icons.person_add_alt_1_rounded,
+          color: AppTheme.brandBlack,
+        ),
         label: const Text(
           'Invite User',
           style: TextStyle(
             color: AppTheme.brandBlack,
             fontWeight: FontWeight.w700,
+            fontSize: 12, // Added font size
           ),
         ),
       ),
@@ -318,12 +326,15 @@ class _AdminUsersPageState extends State<AdminUsersPage>
               color: AppTheme.brandBlack,
               child: TextField(
                 onChanged: (value) => setState(() => _searchQuery = value),
-                style: const TextStyle(color: AppTheme.brandBg),
+                style: const TextStyle(
+                  color: AppTheme.brandBg,
+                  fontSize: 12,
+                ), // Added font size
                 decoration: InputDecoration(
                   hintText: 'Search name, email or role',
                   hintStyle: TextStyle(
                     color: AppTheme.brandBg.withOpacity(0.55),
-                    fontSize: 13,
+                    fontSize: 12, // Reduced from 13
                   ),
                   filled: true,
                   fillColor: AppTheme.brandBlack.withOpacity(0.35),
@@ -331,8 +342,10 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                     Icons.search_rounded,
                     color: AppTheme.brandBg.withOpacity(0.7),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
@@ -352,8 +365,9 @@ class _AdminUsersPageState extends State<AdminUsersPage>
                           return _UserCard(
                             user: user,
                             onEdit: () {
-                              final originalIndex =
-                                  _users.indexWhere((element) => element.id == user.id);
+                              final originalIndex = _users.indexWhere(
+                                (element) => element.id == user.id,
+                              );
                               _showUserForm(user: user, index: originalIndex);
                             },
                             onDelete: () => _deleteUser(user),
@@ -426,144 +440,144 @@ class _UserCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: AppTheme.cardShadow,
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// ✅ Top Row: Avatar + Name + PopupMenu
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CircleAvatar(
-                radius: 28,
+                radius: 18,
                 backgroundColor: AppTheme.brandGreen.withOpacity(0.15),
                 child: Text(
                   user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                   style: const TextStyle(
                     color: AppTheme.brandBlack,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Text(
+                  user.name,
+                  style: const TextStyle(
+                    color: AppTheme.brandBlack,
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+              PopupMenuButton<String>(
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text('Edit', style: TextStyle(fontSize: 12)),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Remove', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    onEdit();
+                  } else if (value == 'delete') {
+                    onDelete();
+                  }
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                icon: const Icon(Icons.more_horiz, color: AppTheme.brandBlack),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 4),
+
+          /// ✅ Email below name
+          Text(
+            user.email,
+            style: TextStyle(
+              color: AppTheme.brandBlack.withOpacity(0.65),
+              fontSize: 12,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          /// ✅ Role + Status + Switch
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.brandBullet,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            user.name,
-                            style: const TextStyle(
-                              color: AppTheme.brandBlack,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        PopupMenuButton<String>(
-                          itemBuilder: (context) => const [
-                            PopupMenuItem(value: 'edit', child: Text('Edit')),
-                            PopupMenuItem(value: 'delete', child: Text('Remove')),
-                          ],
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              onEdit();
-                            } else if (value == 'delete') {
-                              onDelete();
-                            }
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          icon: const Icon(
-                            Icons.more_horiz,
-                            color: AppTheme.brandBlack,
-                          ),
-                        ),
-                      ],
+                    const Icon(
+                      Icons.badge_outlined,
+                      size: 14,
+                      color: AppTheme.brandBlack,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(width: 6),
                     Text(
-                      user.email,
-                      style: TextStyle(
-                        color: AppTheme.brandBlack.withOpacity(0.65),
-                        fontSize: 13,
+                      user.role,
+                      style: const TextStyle(
+                        color: AppTheme.brandBlack,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.brandBullet,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.badge_outlined,
-                                size: 16,
-                                color: AppTheme.brandBlack,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                user.role,
-                                style: const TextStyle(
-                                  color: AppTheme.brandBlack,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: user.isActive
-                                    ? AppTheme.brandGreen.withOpacity(0.15)
-                                    : AppTheme.brandBullet,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Text(
-                                user.isActive ? 'Active' : 'Suspended',
-                                style: TextStyle(
-                                  color: user.isActive
-                                      ? AppTheme.brandGreen
-                                      : AppTheme.brandBlack.withOpacity(0.6),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Switch.adaptive(
-                              value: user.isActive,
-                              activeColor: AppTheme.brandGreen,
-                              onChanged: onToggleActivation,
-                            ),
-                          ],
-                        ),
-                      ],
                     ),
                   ],
                 ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: user.isActive
+                          ? AppTheme.brandGreen.withOpacity(0.15)
+                          : AppTheme.brandBullet,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      user.isActive ? 'Active' : 'Suspended',
+                      style: TextStyle(
+                        color: user.isActive
+                            ? AppTheme.brandGreen
+                            : AppTheme.brandBlack.withOpacity(0.6),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Switch.adaptive(
+                    value: user.isActive,
+                    activeColor: AppTheme.brandGreen,
+                    onChanged: onToggleActivation,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ],
               ),
             ],
           ),
@@ -600,7 +614,7 @@ class _UserTextField extends StatelessWidget {
           style: const TextStyle(
             color: AppTheme.brandBlack,
             fontWeight: FontWeight.w600,
-            fontSize: 13,
+            fontSize: 12, // Reduced from 13
           ),
         ),
         const SizedBox(height: 8),
@@ -609,16 +623,20 @@ class _UserTextField extends StatelessWidget {
           validator: validator,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
+          style: const TextStyle(fontSize: 12), // Added font size
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: const TextStyle(fontSize: 12), // Added font size
             filled: true,
             fillColor: AppTheme.brandBullet,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -650,7 +668,7 @@ class _EmptyUsersState extends StatelessWidget {
               alignment: Alignment.center,
               child: const Icon(
                 Icons.group_add_rounded,
-                size: 36,
+                size: 32, // Reduced from 36
                 color: AppTheme.brandBlack,
               ),
             ),
@@ -659,7 +677,7 @@ class _EmptyUsersState extends StatelessWidget {
               'No users yet',
               style: TextStyle(
                 color: AppTheme.brandBg,
-                fontSize: 18,
+                fontSize: 16, // Reduced from 18
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -669,7 +687,7 @@ class _EmptyUsersState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppTheme.brandBg.withOpacity(0.7),
-                fontSize: 13,
+                fontSize: 12, // Reduced from 13
                 height: 1.4,
               ),
             ),
@@ -679,15 +697,24 @@ class _EmptyUsersState extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.brandBg,
                 side: const BorderSide(color: AppTheme.brandBg),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
-              icon: const Icon(Icons.person_add_alt_1_rounded),
+              icon: const Icon(
+                Icons.person_add_alt_1_rounded,
+                size: 16,
+              ), // Reduced icon size
               label: const Text(
                 'Invite User',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ), // Added font size
               ),
             ),
           ],

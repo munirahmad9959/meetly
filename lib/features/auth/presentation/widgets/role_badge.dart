@@ -11,7 +11,7 @@ class RoleBadge extends StatelessWidget {
   const RoleBadge({
     super.key,
     required this.role,
-    this.fontSize = 14,
+    this.fontSize = 10,
     this.padding = 8,
     this.showIcon = true,
   });

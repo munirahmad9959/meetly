@@ -10,7 +10,6 @@ class AdminRoomsPage extends StatefulWidget {
 
 class _AdminRoomsPageState extends State<AdminRoomsPage>
     with AutomaticKeepAliveClientMixin {
-
   final List<RoomRecord> _rooms = [
     RoomRecord(
       id: 'room-1',
@@ -64,7 +63,9 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
     final amenitiesController = TextEditingController(
       text: room?.amenities.join(', ') ?? '',
     );
-    final formKey = GlobalKey<FormState>(debugLabel: 'roomForm_${DateTime.now().millisecondsSinceEpoch}');
+    final formKey = GlobalKey<FormState>(
+      debugLabel: 'roomForm_${DateTime.now().millisecondsSinceEpoch}',
+    );
 
     showModalBottomSheet<void>(
       context: context,
@@ -88,143 +89,144 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                Text(
-                  room == null ? 'Add Room' : 'Update Room',
-                  style: const TextStyle(
-                    color: AppTheme.brandBlack,
-                    fontSize: 16, // Reduced from 18
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    room == null ? 'Add Room' : 'Update Room',
+                    style: const TextStyle(
+                      color: AppTheme.brandBlack,
+                      fontSize: 16, // Reduced from 18
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _RoomTextField(
-                  controller: nameController,
-                  label: 'Room Name',
-                  hintText: 'E.g. Innovation Lab',
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a room name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _RoomTextField(
-                  controller: locationController,
-                  label: 'Location',
-                  hintText: 'E.g. 2nd Floor · West Wing',
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a location';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _RoomTextField(
-                  controller: capacityController,
-                  label: 'Capacity',
-                  hintText: 'E.g. 12',
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    final parsed = int.tryParse(value ?? '');
-                    if (parsed == null || parsed <= 0) {
-                      return 'Capacity must be a positive number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _RoomTextField(
-                  controller: amenitiesController,
-                  label: 'Amenities',
-                  hintText: 'Separate amenities with commas',
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: const BorderSide(color: AppTheme.brandBlack),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 20),
+                  _RoomTextField(
+                    controller: nameController,
+                    label: 'Room Name',
+                    hintText: 'E.g. Innovation Lab',
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a room name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _RoomTextField(
+                    controller: locationController,
+                    label: 'Location',
+                    hintText: 'E.g. 2nd Floor · West Wing',
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a location';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _RoomTextField(
+                    controller: capacityController,
+                    label: 'Capacity',
+                    hintText: 'E.g. 12',
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      final parsed = int.tryParse(value ?? '');
+                      if (parsed == null || parsed <= 0) {
+                        return 'Capacity must be a positive number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _RoomTextField(
+                    controller: amenitiesController,
+                    label: 'Amenities',
+                    hintText: 'Separate amenities with commas',
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: const BorderSide(color: AppTheme.brandBlack),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: AppTheme.brandBlack,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12, // Reduced from 13
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: AppTheme.brandBlack,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12, // Reduced from 13
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (!(formKey.currentState?.validate() ?? false)) {
-                            return;
-                          }
-                          final amenities = amenitiesController.text
-                              .split(',')
-                              .map((item) => item.trim())
-                              .where((item) => item.isNotEmpty)
-                              .toList();
-                          final capacity =
-                              int.tryParse(capacityController.text.trim()) ?? 0;
-
-                          final record = RoomRecord(
-                            id:
-                                room?.id ??
-                                DateTime.now().millisecondsSinceEpoch
-                                    .toString(),
-                            name: nameController.text.trim(),
-                            location: locationController.text.trim(),
-                            capacity: capacity,
-                            amenities: amenities,
-                          );
-
-                          setState(() {
-                            if (roomIndex != null) {
-                              _rooms[roomIndex] = record;
-                            } else {
-                              _rooms.add(record);
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (!(formKey.currentState?.validate() ?? false)) {
+                              return;
                             }
-                          });
+                            final amenities = amenitiesController.text
+                                .split(',')
+                                .map((item) => item.trim())
+                                .where((item) => item.isNotEmpty)
+                                .toList();
+                            final capacity =
+                                int.tryParse(capacityController.text.trim()) ??
+                                0;
 
-                          Navigator.of(context).pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.brandBlack,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            final record = RoomRecord(
+                              id:
+                                  room?.id ??
+                                  DateTime.now().millisecondsSinceEpoch
+                                      .toString(),
+                              name: nameController.text.trim(),
+                              location: locationController.text.trim(),
+                              capacity: capacity,
+                              amenities: amenities,
+                            );
+
+                            setState(() {
+                              if (roomIndex != null) {
+                                _rooms[roomIndex] = record;
+                              } else {
+                                _rooms.add(record);
+                              }
+                            });
+
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.brandBlack,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Save Room',
-                          style: TextStyle(
-                            color: AppTheme.brandBg,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12, // Reduced from 13
+                          child: const Text(
+                            'Save Room',
+                            style: TextStyle(
+                              color: AppTheme.brandBg,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12, // Reduced from 13
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
           ),
         );
       },
@@ -260,7 +262,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
           'Rooms',
           style: TextStyle(
             color: AppTheme.brandBg,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             fontSize: 16, // Reduced from 18
           ),
         ),
@@ -274,7 +276,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
           'Add Room',
           style: TextStyle(
             color: AppTheme.brandBlack,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             fontSize: 12, // Added font size reduction
           ),
         ),
@@ -398,10 +400,10 @@ class _RoomCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.brandBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16), // Reduced from 24
         boxShadow: AppTheme.cardShadow,
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14), // Reduced from 20
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -416,16 +418,16 @@ class _RoomCard extends StatelessWidget {
                       room.name,
                       style: const TextStyle(
                         color: AppTheme.brandBlack,
-                        fontSize: 16, // Reduced from 18
-                        fontWeight: FontWeight.w700,
+                        fontSize: 15, // Reduced from 16
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4), // Reduced from 6
                     Text(
                       room.location,
                       style: TextStyle(
                         color: AppTheme.brandBlack.withOpacity(0.6),
-                        fontSize: 11, // Reduced from 12
+                        fontSize: 11,
                       ),
                     ),
                   ],
@@ -435,17 +437,11 @@ class _RoomCard extends StatelessWidget {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'edit',
-                    child: Text(
-                      'Edit',
-                      style: TextStyle(fontSize: 12),
-                    ), // Reduced
+                    child: Text('Edit', style: TextStyle(fontSize: 12)),
                   ),
                   const PopupMenuItem(
                     value: 'delete',
-                    child: Text(
-                      'Remove',
-                      style: TextStyle(fontSize: 12),
-                    ), // Reduced
+                    child: Text('Remove', style: TextStyle(fontSize: 12)),
                   ),
                 ],
                 onSelected: (value) {
@@ -456,65 +452,65 @@ class _RoomCard extends StatelessWidget {
                   }
                 },
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12), 
                 ),
                 icon: const Icon(Icons.more_horiz, color: AppTheme.brandBlack),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10), // Reduced from 16
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+                  horizontal: 10, 
+                  vertical: 5, 
                 ),
                 decoration: BoxDecoration(
                   color: AppTheme.brandBullet,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12), 
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.people_outline,
-                      size: 14, // Reduced from 16
+                      size: 13, 
                       color: AppTheme.brandBlack,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4), 
                     Text(
                       '${room.capacity} seats',
                       style: const TextStyle(
                         color: AppTheme.brandBlack,
-                        fontSize: 11, // Reduced from 12
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (room.amenities.isNotEmpty) const SizedBox(width: 12),
+              if (room.amenities.isNotEmpty) const SizedBox(width: 8),
               Expanded(
                 child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 6,
+                  runSpacing: 6,
                   children: room.amenities
                       .map(
                         (amenity) => Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: 10,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
                             color: AppTheme.brandSkin.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             amenity,
                             style: const TextStyle(
                               color: AppTheme.brandBlack,
-                              fontSize: 11, // Reduced from 12
+                              fontSize: 10, // Slightly smaller
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -627,7 +623,7 @@ class _EmptyRoomsState extends StatelessWidget {
               style: TextStyle(
                 color: AppTheme.brandBg,
                 fontSize: 16, // Reduced from 18
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
