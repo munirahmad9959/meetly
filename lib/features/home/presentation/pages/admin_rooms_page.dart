@@ -10,6 +10,7 @@ class AdminRoomsPage extends StatefulWidget {
 
 class _AdminRoomsPageState extends State<AdminRoomsPage>
     with AutomaticKeepAliveClientMixin {
+
   final List<RoomRecord> _rooms = [
     RoomRecord(
       id: 'room-1',
@@ -53,14 +54,17 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
   }
 
   void _showRoomForm({RoomRecord? room, int? roomIndex}) {
-    final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController(text: room?.name ?? '');
-    final locationController = TextEditingController(text: room?.location ?? '');
-    final capacityController =
-        TextEditingController(text: room?.capacity.toString() ?? '');
+    final locationController = TextEditingController(
+      text: room?.location ?? '',
+    );
+    final capacityController = TextEditingController(
+      text: room?.capacity.toString() ?? '',
+    );
     final amenitiesController = TextEditingController(
       text: room?.amenities.join(', ') ?? '',
     );
+    final formKey = GlobalKey<FormState>(debugLabel: 'roomForm_${DateTime.now().millisecondsSinceEpoch}');
 
     showModalBottomSheet<void>(
       context: context,
@@ -77,17 +81,18 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
             top: 24,
           ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Text(
                   room == null ? 'Add Room' : 'Update Room',
                   style: const TextStyle(
                     color: AppTheme.brandBlack,
-                    fontSize: 18,
+                    fontSize: 16, // Reduced from 18
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -157,7 +162,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                           style: TextStyle(
                             color: AppTheme.brandBlack,
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
+                            fontSize: 12, // Reduced from 13
                           ),
                         ),
                       ),
@@ -178,9 +183,9 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                               int.tryParse(capacityController.text.trim()) ?? 0;
 
                           final record = RoomRecord(
-                            id: room?.id ??
-                                DateTime.now()
-                                    .millisecondsSinceEpoch
+                            id:
+                                room?.id ??
+                                DateTime.now().millisecondsSinceEpoch
                                     .toString(),
                             name: nameController.text.trim(),
                             location: locationController.text.trim(),
@@ -210,7 +215,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                           style: TextStyle(
                             color: AppTheme.brandBg,
                             fontWeight: FontWeight.w700,
-                            fontSize: 13,
+                            fontSize: 12, // Reduced from 13
                           ),
                         ),
                       ),
@@ -220,13 +225,17 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
               ],
             ),
           ),
+          ),
         );
       },
     ).whenComplete(() {
-      nameController.dispose();
-      locationController.dispose();
-      capacityController.dispose();
-      amenitiesController.dispose();
+      // Dispose controllers after a brief delay to ensure bottom sheet is fully closed
+      Future.delayed(const Duration(milliseconds: 100), () {
+        nameController.dispose();
+        locationController.dispose();
+        capacityController.dispose();
+        amenitiesController.dispose();
+      });
     });
   }
 
@@ -252,11 +261,12 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
           style: TextStyle(
             color: AppTheme.brandBg,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: 16, // Reduced from 18
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'addRoomFAB',
         onPressed: () => _showRoomForm(),
         backgroundColor: AppTheme.brandGreen,
         icon: const Icon(Icons.add_rounded, color: AppTheme.brandBlack),
@@ -265,6 +275,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
           style: TextStyle(
             color: AppTheme.brandBlack,
             fontWeight: FontWeight.w700,
+            fontSize: 12, // Added font size reduction
           ),
         ),
       ),
@@ -277,12 +288,15 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
               color: AppTheme.brandBlack,
               child: TextField(
                 onChanged: (value) => setState(() => _searchQuery = value),
-                style: const TextStyle(color: AppTheme.brandBg),
+                style: const TextStyle(
+                  color: AppTheme.brandBg,
+                  fontSize: 12,
+                ), // Reduced from default
                 decoration: InputDecoration(
                   hintText: 'Search rooms or amenities',
                   hintStyle: TextStyle(
                     color: AppTheme.brandBg.withOpacity(0.55),
-                    fontSize: 13,
+                    fontSize: 12, // Reduced from 13
                   ),
                   filled: true,
                   fillColor: AppTheme.brandBlack.withOpacity(0.35),
@@ -290,8 +304,10 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                     Icons.search_rounded,
                     color: AppTheme.brandBg.withOpacity(0.7),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
@@ -311,9 +327,13 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                           return _RoomCard(
                             room: room,
                             onEdit: () {
-                              final originalIndex =
-                                  _rooms.indexWhere((r) => r.id == room.id);
-                              _showRoomForm(room: room, roomIndex: originalIndex);
+                              final originalIndex = _rooms.indexWhere(
+                                (r) => r.id == room.id,
+                              );
+                              _showRoomForm(
+                                room: room,
+                                roomIndex: originalIndex,
+                              );
                             },
                             onDelete: () => _removeRoom(room),
                           );
@@ -396,7 +416,7 @@ class _RoomCard extends StatelessWidget {
                       room.name,
                       style: const TextStyle(
                         color: AppTheme.brandBlack,
-                        fontSize: 18,
+                        fontSize: 16, // Reduced from 18
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -405,7 +425,7 @@ class _RoomCard extends StatelessWidget {
                       room.location,
                       style: TextStyle(
                         color: AppTheme.brandBlack.withOpacity(0.6),
-                        fontSize: 12,
+                        fontSize: 11, // Reduced from 12
                       ),
                     ),
                   ],
@@ -415,11 +435,17 @@ class _RoomCard extends StatelessWidget {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'edit',
-                    child: Text('Edit'),
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(fontSize: 12),
+                    ), // Reduced
                   ),
                   const PopupMenuItem(
                     value: 'delete',
-                    child: Text('Remove'),
+                    child: Text(
+                      'Remove',
+                      style: TextStyle(fontSize: 12),
+                    ), // Reduced
                   ),
                 ],
                 onSelected: (value) {
@@ -440,8 +466,10 @@ class _RoomCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.brandBullet,
                   borderRadius: BorderRadius.circular(14),
@@ -451,7 +479,7 @@ class _RoomCard extends StatelessWidget {
                   children: [
                     const Icon(
                       Icons.people_outline,
-                      size: 16,
+                      size: 14, // Reduced from 16
                       color: AppTheme.brandBlack,
                     ),
                     const SizedBox(width: 6),
@@ -459,7 +487,7 @@ class _RoomCard extends StatelessWidget {
                       '${room.capacity} seats',
                       style: const TextStyle(
                         color: AppTheme.brandBlack,
-                        fontSize: 12,
+                        fontSize: 11, // Reduced from 12
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -486,7 +514,7 @@ class _RoomCard extends StatelessWidget {
                             amenity,
                             style: const TextStyle(
                               color: AppTheme.brandBlack,
-                              fontSize: 12,
+                              fontSize: 11, // Reduced from 12
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -532,7 +560,7 @@ class _RoomTextField extends StatelessWidget {
           style: const TextStyle(
             color: AppTheme.brandBlack,
             fontWeight: FontWeight.w600,
-            fontSize: 13,
+            fontSize: 12, // Reduced from 13
           ),
         ),
         const SizedBox(height: 8),
@@ -542,16 +570,22 @@ class _RoomTextField extends StatelessWidget {
           maxLines: maxLines,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
+          style: const TextStyle(fontSize: 12), // Added font size reduction
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: const TextStyle(
+              fontSize: 12,
+            ), // Added font size reduction
             filled: true,
             fillColor: AppTheme.brandBullet,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -583,7 +617,7 @@ class _EmptyRoomsState extends StatelessWidget {
               alignment: Alignment.center,
               child: const Icon(
                 Icons.meeting_room_outlined,
-                size: 36,
+                size: 32, // Reduced from 36
                 color: AppTheme.brandBlack,
               ),
             ),
@@ -592,7 +626,7 @@ class _EmptyRoomsState extends StatelessWidget {
               'No rooms yet',
               style: TextStyle(
                 color: AppTheme.brandBg,
-                fontSize: 18,
+                fontSize: 16, // Reduced from 18
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -602,7 +636,7 @@ class _EmptyRoomsState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppTheme.brandBg.withOpacity(0.7),
-                fontSize: 13,
+                fontSize: 12, // Reduced from 13
                 height: 1.4,
               ),
             ),
@@ -612,15 +646,24 @@ class _EmptyRoomsState extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.brandBg,
                 side: const BorderSide(color: AppTheme.brandBg),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
-              icon: const Icon(Icons.add_rounded),
+              icon: const Icon(
+                Icons.add_rounded,
+                size: 16,
+              ), // Reduced icon size
               label: const Text(
                 'Add Room',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ), // Reduced
               ),
             ),
           ],

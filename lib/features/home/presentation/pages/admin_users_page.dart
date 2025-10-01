@@ -56,7 +56,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
   }
 
   void _showUserForm({UserDirectory? user, int? index}) {
-    final formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>(debugLabel: 'userForm_${DateTime.now().millisecondsSinceEpoch}');
     final nameController = TextEditingController(text: user?.name ?? '');
     final emailController = TextEditingController(text: user?.email ?? '');
     String roleValue = user?.role ?? _roles.first;
@@ -253,8 +253,11 @@ class _AdminUsersPageState extends State<AdminUsersPage>
         );
       },
     ).whenComplete(() {
-      nameController.dispose();
-      emailController.dispose();
+      // Dispose controllers after a brief delay to ensure bottom sheet is fully closed
+      Future.delayed(const Duration(milliseconds: 100), () {
+        nameController.dispose();
+        emailController.dispose();
+      });
     });
   }
 
@@ -294,6 +297,7 @@ class _AdminUsersPageState extends State<AdminUsersPage>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'inviteUserFAB',
         onPressed: () => _showUserForm(),
         backgroundColor: AppTheme.brandGreen,
         icon: const Icon(Icons.person_add_alt_1_rounded, color: AppTheme.brandBlack),
