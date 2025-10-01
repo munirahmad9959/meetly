@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:meetly/shared/theme/app_theme.dart';
+import 'package:meetly/core/service_locator.dart';
+import 'package:meetly/features/home/presentation/providers/rooms_provider.dart';
+import 'package:meetly/features/home/domain/entities/room_entity.dart' as domain;
+import 'package:provider/provider.dart';
 
 class AdminRoomsPage extends StatefulWidget {
   const AdminRoomsPage({super.key});
@@ -10,39 +14,35 @@ class AdminRoomsPage extends StatefulWidget {
 
 class _AdminRoomsPageState extends State<AdminRoomsPage>
     with AutomaticKeepAliveClientMixin {
-  final List<RoomRecord> _rooms = [
-    RoomRecord(
-      id: 'room-1',
-      name: 'Design Hub',
-      location: '3rd Floor · North Wing',
-      capacity: 12,
-      amenities: const ['4K Display', 'Figma Mirror', 'Whiteboard'],
-    ),
-    RoomRecord(
-      id: 'room-2',
-      name: 'Strategy War Room',
-      location: '2nd Floor · East Wing',
-      capacity: 20,
-      amenities: const ['Conference Camera', 'Acoustic Panels', 'Coffee Bar'],
-    ),
-    RoomRecord(
-      id: 'room-3',
-      name: 'Sprint Pod',
-      location: '1st Floor · West Wing',
-      capacity: 8,
-      amenities: const ['Focus Lighting', 'Scrum Board', 'HDMI Hub'],
-    ),
-  ];
+  late final RoomsProvider _provider;
+
+  @override
+  void initState() {
+    super.initState();
+    _provider = ServiceLocator.instance.roomsProvider;
+  }
 
   String _searchQuery = '';
 
   @override
   bool get wantKeepAlive => true;
 
-  List<RoomRecord> get _filteredRooms {
+  List<RoomRecord> _mapDomainToRecord(List<domain.RoomEntity> list) {
+    return list
+        .map((r) => RoomRecord(
+              id: r.id,
+              name: r.name,
+              location: r.location,
+              capacity: r.capacity,
+              amenities: r.amenities,
+            ))
+        .toList();
+  }
+
+  List<RoomRecord> _filter(List<RoomRecord> rooms) {
     final query = _searchQuery.trim().toLowerCase();
-    if (query.isEmpty) return _rooms;
-    return _rooms.where((room) {
+    if (query.isEmpty) return rooms;
+    return rooms.where((room) {
       final haystack = [
         room.name.toLowerCase(),
         room.location.toLowerCase(),
@@ -52,7 +52,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
     }).toList();
   }
 
-  void _showRoomForm({RoomRecord? room, int? roomIndex}) {
+  void _showRoomForm({RoomRecord? room}) {
     final nameController = TextEditingController(text: room?.name ?? '');
     final locationController = TextEditingController(
       text: room?.location ?? '',
@@ -171,7 +171,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (!(formKey.currentState?.validate() ?? false)) {
                               return;
                             }
@@ -184,24 +184,37 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
                                 int.tryParse(capacityController.text.trim()) ??
                                 0;
 
+                            final id = room?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
                             final record = RoomRecord(
-                              id:
-                                  room?.id ??
-                                  DateTime.now().millisecondsSinceEpoch
-                                      .toString(),
+                              id: id,
                               name: nameController.text.trim(),
                               location: locationController.text.trim(),
                               capacity: capacity,
                               amenities: amenities,
                             );
 
-                            setState(() {
-                              if (roomIndex != null) {
-                                _rooms[roomIndex] = record;
-                              } else {
-                                _rooms.add(record);
-                              }
-                            });
+                            // Convert to domain entity and call provider
+                            final domainEntity = domain.RoomEntity(
+                              id: record.id,
+                              name: record.name,
+                              location: record.location,
+                              capacity: record.capacity,
+                              amenities: record.amenities,
+                            );
+
+                            if (room != null) {
+                              // Prepare updates map
+                              final updates = {
+                                'name': domainEntity.name,
+                                'location': domainEntity.location,
+                                'capacity': domainEntity.capacity,
+                                'amenities': domainEntity.amenities,
+                                'createdAt': DateTime.now().millisecondsSinceEpoch,
+                              };
+                              await _provider.updateRoom(domainEntity.id, updates);
+                            } else {
+                              await _provider.createRoom(domainEntity);
+                            }
 
                             Navigator.of(context).pop();
                           },
@@ -242,17 +255,15 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
   }
 
   void _removeRoom(RoomRecord room) {
-    setState(() {
-      _rooms.removeWhere((item) => item.id == room.id);
-    });
+    _provider.deleteRoom(room.id);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final filteredRooms = _filteredRooms;
-
-    return Scaffold(
+    return ChangeNotifierProvider.value(
+      value: _provider,
+      child: Scaffold(
       backgroundColor: AppTheme.brandBlack,
       appBar: AppBar(
         backgroundColor: AppTheme.brandBlack,
@@ -320,35 +331,34 @@ class _AdminRoomsPageState extends State<AdminRoomsPage>
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(color: AppTheme.brandBlack),
-                child: filteredRooms.isEmpty
-                    ? _EmptyRoomsState(onAddTap: () => _showRoomForm())
-                    : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
-                        itemBuilder: (context, index) {
-                          final room = filteredRooms[index];
-                          return _RoomCard(
-                            room: room,
-                            onEdit: () {
-                              final originalIndex = _rooms.indexWhere(
-                                (r) => r.id == room.id,
-                              );
-                              _showRoomForm(
-                                room: room,
-                                roomIndex: originalIndex,
-                              );
-                            },
-                            onDelete: () => _removeRoom(room),
-                          );
-                        },
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
-                        itemCount: filteredRooms.length,
-                      ),
+                child: Consumer<RoomsProvider>(
+                  builder: (context, provider, _) {
+                    final uiRooms = _mapDomainToRecord(provider.rooms);
+                    final filtered = _filter(uiRooms);
+                    if (filtered.isEmpty) {
+                      return _EmptyRoomsState(onAddTap: () => _showRoomForm());
+                    }
+                    return ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
+                      itemBuilder: (context, index) {
+                        final room = filtered[index];
+                        return _RoomCard(
+                          room: room,
+                          onEdit: () => _showRoomForm(room: room),
+                          onDelete: () => _removeRoom(room),
+                        );
+                      },
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemCount: filtered.length,
+                    );
+                  },
+                ),
               ),
             ),
           ],
         ),
       ),
-    );
+    ));
   }
 }
 

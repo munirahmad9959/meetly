@@ -34,12 +34,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String fullName,
     UserRole role = UserRole.softwareEngineer,
+    bool isAdmin = false,
   }) async {
     final userModel = await _remoteDataSource.registerWithEmailAndPassword(
       email: email,
       password: password,
       fullName: fullName,
       role: role,
+      isAdmin: isAdmin,
     );
     return userModel.toEntity();
   }

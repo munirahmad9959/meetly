@@ -21,8 +21,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: ServiceLocator.instance.authProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: ServiceLocator.instance.authProvider,
+        ),
+        ChangeNotifierProvider.value(
+          value: ServiceLocator.instance.usersProvider,
+        ),
+      ],
       child: MaterialApp(
         title: 'Meetly',
         debugShowCheckedModeBanner: false,

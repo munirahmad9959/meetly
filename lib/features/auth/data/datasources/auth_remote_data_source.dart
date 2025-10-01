@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../models/user_model.dart';
 import '../../domain/entities/user_entity.dart';
 import 'firestore_data_source.dart';
@@ -17,6 +18,7 @@ abstract class AuthRemoteDataSource {
     required String password,
     required String fullName,
     UserRole role = UserRole.softwareEngineer,
+    bool isAdmin = false,
   });
   
   Future<void> signOut();
@@ -111,30 +113,69 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
     required String fullName,
     UserRole role = UserRole.softwareEngineer,
+    bool isAdmin = false,
   }) async {
     try {
-      final UserCredential result = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      
-      if (result.user == null) {
-        throw Exception('Failed to create user');
-      }
+      if (isAdmin) {
+        // Use secondary app to avoid affecting main auth state
+        final secondaryApp = await Firebase.initializeApp(
+          name: 'secondary',
+          options: Firebase.app().options,
+        );
+        final secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
+        
+        final UserCredential result = await secondaryAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        
+        if (result.user == null) {
+          await secondaryApp.delete();
+          throw Exception('Failed to create user');
+        }
 
-      // Update user display name
-      await result.user!.updateDisplayName(fullName);
-      
-      // Create user model with role
-      final userModel = UserModel.fromFirebaseUser(
-        result.user!,
-        role: role,
-      );
-      
-      // Save user data to Firestore
-      await _firestoreDataSource.saveUser(userModel);
-      
-      return userModel;
+        // Update user display name
+        await result.user!.updateDisplayName(fullName);
+        
+        // Create user model with role
+        final userModel = UserModel.fromFirebaseUser(
+          result.user!,
+          role: role,
+        );
+        
+        // Save user data to Firestore
+        await _firestoreDataSource.saveUser(userModel);
+        
+        // Sign out and delete secondary app
+        await secondaryAuth.signOut();
+        await secondaryApp.delete();
+        
+        return userModel;
+      } else {
+        // Normal registration
+        final UserCredential result = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        
+        if (result.user == null) {
+          throw Exception('Failed to create user');
+        }
+
+        // Update user display name
+        await result.user!.updateDisplayName(fullName);
+        
+        // Create user model with role
+        final userModel = UserModel.fromFirebaseUser(
+          result.user!,
+          role: role,
+        );
+        
+        // Save user data to Firestore
+        await _firestoreDataSource.saveUser(userModel);
+        
+        return userModel;
+      }
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
